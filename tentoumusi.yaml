@@ -1,0 +1,108 @@
+gameTitle: "ブロックフォール"
+version: "1.0.0"
+description: "クラシックな落ち物パズルゲーム。様々な形のブロックを巧みに積み重ね、ラインを揃えて消し、ハイスコアを目指しましょう。"
+targetAudience: "パズルゲーム愛好家、レトロゲームが好きな方"
+
+gameElements:
+  board:
+    width: 10               # ボードの幅（セル数）
+    height: 20              # ボードの高さ（セル数）
+    hiddenRows: 2           # 上部の見えない行（新しいブロックの出現位置）
+  tetrominoes:              # ブロックの種類（テトリミノ）
+    - name: "I"
+      shape: [[1,1,1,1]]
+      color: "cyan"
+    - name: "O"
+      shape: [[1,1],[1,1]]
+      color: "yellow"
+    - name: "T"
+      shape: [[0,1,0],[1,1,1]]
+      color: "purple"
+    - name: "S"
+      shape: [[0,1,1],[1,1,0]]
+      color: "green"
+    - name: "Z"
+      shape: [[1,1,0],[0,1,1]]
+      color: "red"
+    - name: "J"
+      shape: [[1,0,0],[1,1,1]]
+      color: "blue"
+    - name: "L"
+      shape: [[0,0,1],[1,1,1]]
+      color: "orange"
+  controls:
+    moveLeft: "ArrowLeft"     # 左移動
+    moveRight: "ArrowRight"   # 右移動
+    rotate: "ArrowUp"         # 回転
+    softDrop: "ArrowDown"     # ソフトドロップ（少し速く落とす）
+    hardDrop: "Space"         # ハードドロップ（一気に落とす）
+    # hold: "KeyC"            # ホールド機能（オプション）
+
+gameFlow:
+  - startScreen:
+      title: "ブロックフォール"
+      instructions: |
+        左右矢印キー: 移動
+        上矢印キー: 回転
+        下矢印キー: ソフトドロップ
+        スペースキー: ハードドロップ
+        ラインを揃えて消そう！
+      startButtonText: "ゲーム開始"
+  - gamePlay:
+      - spawnNewTetromino:    # 新しいテトリミノをランダムに出現させる
+      - playerControl:        # プレイヤーの操作を処理
+      - blockDescent:         # テトリミノがレベルに応じて自動で落下
+      - collisionDetection:   # 衝突判定
+          - withWalls:        # 壁との衝突
+          - withLandedBlocks: # 他の積まれたブロックとの衝突
+      - lockPiece:            # テトリミノが着地したら固定
+      - lineClear:            # ラインが揃ったら消去
+          - checkCompletedLines
+          - removeLines
+          - shiftBlocksDown
+      - updateScore:          # スコアを更新
+      - updateLevel:          # レベルを更新（消したライン数などに基づく）
+      - checkGameOver:        # ゲームオーバー条件の確認（ブロックが最上部まで積み上がったか）
+  - gameOverScreen:
+      message: "ゲームオーバー！"
+      scoreDisplay: "最終スコア: [score]"
+      linesDisplay: "消したライン数: [lines]"
+      levelDisplay: "到達レベル: [level]"
+      retryButtonText: "もう一度プレイ"
+
+scoring:
+  singleLine: 100           # 1ライン消去
+  doubleLine: 300           # 2ライン同時消去
+  tripleLine: 500           # 3ライン同時消去
+  tetrisLine: 800           # 4ライン同時消去 (テトリス)
+  softDropPerCell: 1        # ソフトドロップ1セルごと
+  hardDropPerCell: 2        # ハードドロップ1セルごと
+
+leveling:
+  linesPerLevel: 10         # 次のレベルまでに必要なライン数
+  initialFallSpeedMs: 1000  # 初期落下速度 (ミリ秒/セル)
+  speedIncreaseFactor: 0.85 # レベルアップごとの速度上昇率 (例: 新速度 = 現速度 * 0.85)
+  maxLevel: 20              # 最大レベル
+
+uiElements:
+  gameBoard:                # メインのゲーム盤面
+  nextPiecePreview:         # 次に出現するテトリミノのプレビュー
+  scoreDisplay:             # 現在のスコア表示
+  levelDisplay:             # 現在のレベル表示
+  linesClearedDisplay:      # 消したライン数の総計表示
+  # holdPiecePreview:       # ホールド中のテトリミノ表示 (オプション)
+
+assets:
+  font: "'Press Start 2P', cursive" # ゲームの雰囲気に合うフォント
+  colors:
+    backgroundColor: "#1a1a2e"  # 暗めの背景色
+    gridColor: "#33334d"      # グリッド線の色
+    textColor: "#e0e0e0"        # テキストの色
+    # テトリミノの色は gameElements.tetrominoes で定義
+
+soundEffects: # (オプション、今回は実装に含めず)
+  move: "sfx_move.wav"
+  rotate: "sfx_rotate.wav"
+  drop: "sfx_drop.wav"
+  lineClear: "sfx_lineclear.wav"
+  gameOver: "sfx_gameover.wav"
